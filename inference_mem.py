@@ -753,39 +753,7 @@ def main(args):
         print(f"Prompt: {prompt}")
 
 
-        if (args.repeat_token is not None or args.repeat_num is not None) and not args.benchmark:
-            tag = f"sample_{i}_seed_{seed}"
-            if not args.benchmark: 
-                os.makedirs(logs_dir, exist_ok=True)
-            a12_json = os.path.join(logs_dir, f"A12_{tag}.json") if 'output_dir' in locals() else None
-
-            a12 = representation_checks_A1_A2(
-                pipe=pipe,
-                core_prompt=gt_prompt,
-                suffix_prompt=prompt,
-                device=device,
-                save_path=a12_json,
-                tag=tag,
-            )
-
-            if args.with_tracking:
-                wandb.log({
-                    "A1_core_mean_cos": a12["A1_core_mean_cos"],
-                    "A1_core_frac_ge_0.999": a12["A1_core_frac_ge_0.999"],
-                    "A1_n_positions": a12["A1_n_positions"],
-                    "A2_eot_cos": a12["A2_eot_cos"],
-                    "A2_eot_idx_core": a12["A2_eot_idx_core"],
-                    "A2_eot_idx_suffix": a12["A2_eot_idx_suffix"],
-                    "S_suffix_len_tokens": a12["suffix_len_tokens"],
-                    "S_cos_suffix_to_EOT_suf_mean": a12["S_cos_suffix_to_EOT_suf_mean"],
-                    "S_cos_suffix_to_EOT_suf_max": a12["S_cos_suffix_to_EOT_suf_max"],
-                    "S_cos_suffix_to_EOT_suf_min": a12["S_cos_suffix_to_EOT_suf_min"],
-                    "S_cos_suffix_to_EOT_core_mean": a12["S_cos_suffix_to_EOT_core_mean"],
-                    "S_suffix_hidden_norm_mean": a12["S_suffix_hidden_norm_mean"],
-                })
-  
-
-        elif args.num_neighbors is not None and args.prompt_aug_style == 'neighbor_replace':
+        if args.num_neighbors is not None and args.prompt_aug_style == 'neighbor_replace':
             set_random_seed(seed)
 
             if args.xattn_rescale:
